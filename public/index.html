@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Crypto Wallet - کیف پول واقعی</title>
+    <style>
+        :root {
+            --primary: #1e40af;
+            --secondary: #3b82f6;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui; }
+        body { background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); min-height: 100vh; padding: 20px; color: #333; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { text-align: center; color: white; padding: 30px 0; }
+        .logo { font-size: 60px; margin-bottom: 15px; }
+        .site-title { font-size: 2.5rem; font-weight: 800; margin-bottom: 10px; }
+        .auth-section, .main-section { background: white; border-radius: 20px; padding: 40px; margin-bottom: 30px; }
+        .main-section { display: none; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; }
+        input, select, button { width: 100%; padding: 15px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 16px; margin-bottom: 10px; }
+        button { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; border: none; cursor: pointer; font-weight: 600; }
+        button:hover { transform: translateY(-2px); }
+        .balance-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .balance-card { background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%); color: white; padding: 25px; border-radius: 15px; text-align: center; }
+        .balance-amount { font-size: 2rem; font-weight: 800; margin: 10px 0; }
+        .real-badge { background: var(--success); color: white; padding: 5px 10px; border-radius: 10px; font-size: 0.8rem; }
+        .alert { padding: 15px; border-radius: 10px; margin: 10px 0; }
+        .alert-success { background: #dcfce7; color: #166534; }
+        .alert-error { background: #fee2e2; color: #991b1b; }
+        .loading { display: none; text-align: center; padding: 40px; }
+        .spinner { border: 4px solid #f3f4f6; border-top: 4px solid #3b82f6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">💎</div>
+            <h1 class="site-title">Real Crypto Wallet</h1>
+            <p>کیف پول واقعی با انتقال REAL - شبکه تست‌نت</p>
+        </div>
+
+        <div class="auth-section" id="authSection">
+            <h2 style="text-align: center; margin-bottom: 30px;">🔐 ایجاد کیف پول REAL</h2>
+            <button onclick="createWallet()" style="font-size: 1.2rem; padding: 18px;">
+                💎 ایجاد کیف پول REAL
+            </button>
+            <div style="margin-top: 20px; padding: 15px; background: #f0f9ff; border-radius: 10px;">
+                <h3>🎁 امکانات REAL:</h3>
+                <p>• انتقال واقعی اتریوم و BNB</p>
+                <p>• پاداش‌های واقعی RWD Token</p>
+                <p>• شبکه تست‌نت (رایگان)</p>
+                <p>• مشاهده تراکنش در Explorer</p>
+            </div>
+        </div>
+
+        <div class="main-section" id="mainSection">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                <div>
+                    <h2>💰 کیف پول REAL شما <span class="real-badge">REAL</span></h2>
+                    <p id="walletAddress" style="color: #6b7280; font-family: monospace;"></p>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="claimBonus()" style="width: auto; background: var(--success); padding: 10px 20px;">
+                        🎁 دریافت پاداش
+                    </button>
+                    <button onclick="logout()" style="width: auto; background: var(--danger); padding: 10px 20px;">
+                        🚪 خروج
+                    </button>
+                </div>
+            </div>
+
+            <div class="balance-cards">
+                <div class="balance-card">
+                    <h3>🔷 اتریوم <span class="real-badge">REAL</span></h3>
+                    <div class="balance-amount" id="ethBalance">0</div>
+                    <div>شبکه تست‌نت</div>
+                </div>
+                <div class="balance-card" style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);">
+                    <h3>💛 BNB <span class="real-badge">REAL</span></h3>
+                    <div class="balance-amount" id="bnbBalance">0</div>
+                    <div>شبکه تست‌نت</div>
+                </div>
+                <div class="balance-card" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                    <h3>₿ بیت‌کوین</h3>
+                    <div class="balance-amount" id="btcBalance">0</div>
+                    <div>پاداش تست</div>
+                </div>
+                <div class="balance-card" style="background: linear-gradient(135deg, #059669 0%, #047857 100%);">
+                    <h3>🎯 RWD Token</h3>
+                    <div class="balance-amount" id="rwdBalance">0</div>
+                    <div>توکن پاداش</div>
+                </div>
+            </div>
+
+            <div style="background: #f8fafc; padding: 25px; border-radius: 15px; margin-bottom: 20px;">
+                <h3>📤 انتقال REAL</h3>
+                <select id="transferCurrency">
+                    <option value="ETH">اتریوم (ETH) - تست‌نت</option>
+                    <option value="BNB">BNB - تست‌نت</option>
+                </select>
+                <input type="text" id="toAddress" placeholder="آدرس مقصد" dir="ltr">
+                <input type="number" id="transferAmount" placeholder="مبلغ" step="0.000001">
+                <input type="password" id="privateKey" placeholder="کلید خصوصی REAL" dir="ltr">
+                <select id="networkType">
+                    <option value="testnet">شبکه تست (Testnet) - رایگان</option>
+                    <option value="mainnet">شبکه اصلی (Mainnet) - واقعی</option>
+                </select>
+                <button onclick="transferReal()">⚡ انتقال REAL</button>
+            </div>
+
+            <div style="background: #fffbeb; padding: 20px; border-radius: 15px; border: 2px solid #f59e0b;">
+                <h3>💡 راهنمای استفاده REAL:</h3>
+                <p>1. ابتدا از faucet اتر رایگان دریافت کنید: <a href="https://goerli-faucet.pk910.de" target="_blank">Goerli Faucet</a></p>
+                <p>2. انتقال‌ها در تست‌نت واقعی هستند و در Explorer قابل مشاهده</p>
+                <p>3. برای شبکه اصلی، باید ارز واقعی داشته باشید</p>
+            </div>
+
+            <div id="alertContainer" style="margin-top: 20px;"></div>
+        </div>
+
+        <div class="loading" id="loadingSection">
+            <div class="spinner"></div>
+            <p id="loadingText">در حال پردازش...</p>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        
+        async function createWallet() {
+            showLoading(true, 'در حال ایجاد کیف پول REAL...');
+            try {
+                const response = await fetch(`${API_BASE}/wallet/create`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    localStorage.setItem('walletAddress', data.wallet.address);
+                    localStorage.setItem('privateKey', data.wallet.privateKey);
+                    showAlert(
+                        `🎉 کیف پول REAL ایجاد شد!<br>
+                         <strong>آدرس:</strong> ${data.wallet.address}<br>
+                         <strong>کلید خصوصی:</strong> ${data.wallet.privateKey}<br>
+                         💡 برای شروع: از faucet اتر رایگان دریافت کنید`,
+                        'success'
+                    );
+                    showMainSection();
+                    loadWalletData();
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                showAlert('خطا: ' + error.message, 'error');
+            }
+            showLoading(false);
+        }
+
+        async function loadWalletData() {
+            const address = localStorage.getItem('walletAddress');
+            if (!address) return;
+            
+            showLoading(true, 'دریافت موجودی REAL...');
+            try {
+                const response = await fetch(`${API_BASE}/balance/${address}`);
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById('ethBalance').textContent = data.balances.ETH?.toFixed(6) || '0';
+                    document.getElementById('bnbBalance').textContent = data.balances.BNB?.toFixed(6) || '0';
+                    document.getElementById('btcBalance').textContent = data.balances.BTC?.toFixed(6) || '0';
+                    document.getElementById('rwdBalance').textContent = data.balances.RWD?.toFixed(2) || '0';
+                    document.getElementById('walletAddress').textContent = address;
+                }
+            } catch (error) {
+                showAlert('خطا در دریافت موجودی', 'error');
+            }
+            showLoading(false);
+        }
+
+        async function transferReal() {
+            const currency = document.getElementById('transferCurrency').value;
+            const toAddress = document.getElementById('toAddress').value;
+            const amount = parseFloat(document.getElementById('transferAmount').value);
+            const privateKey = document.getElementById('privateKey').value;
+            const networkType = document.getElementById('networkType').value;
+            const fromAddress = localStorage.getItem('walletAddress');
+
+            if (!toAddress || !amount || !privateKey) {
+                return showAlert('لطفا تمام فیلدها را پر کنید', 'error');
+            }
+
+            if (networkType === 'mainnet') {
+                if (!confirm('⚠️ شما در حال انتقال REAL در شبکه اصلی هستید. این تراکنش واقعی است و هزینه دارد. ادامه می‌دهید؟')) {
+                    return;
+                }
+            }
+
+            showLoading(true, 'در حال انجام انتقال REAL...');
+            try {
+                const response = await fetch(`${API_BASE}/transfer/real`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        fromAddress,
+                        toAddress,
+                        amount,
+                        currency,
+                        privateKey,
+                        networkType
+                    })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showAlert(
+                        `✅ انتقال REAL موفق!<br>
+                         ${amount} ${currency} انتقال یافت<br>
+                         <a href="${data.explorerUrl}" target="_blank" style="color: var(--success);">مشاهده در Explorer</a>`,
+                        'success'
+                    );
+                    document.getElementById('toAddress').value = '';
+                    document.getElementById('transferAmount').value = '';
+                    document.getElementById('privateKey').value = '';
+                    loadWalletData();
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                showAlert('خطا در انتقال REAL: ' + error.message, 'error');
+            }
+            showLoading(false);
+        }
+
+        async function claimBonus() {
+            const address = localStorage.getItem('walletAddress');
+            showLoading(true, 'دریافت پاداش REAL...');
+            try {
+                const response = await fetch(`${API_BASE}/bonus/claim`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ walletAddress: address })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showAlert('🎉 پاداش‌های REAL دریافت شد!', 'success');
+                    loadWalletData();
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                showAlert('خطا در دریافت پاداش', 'error');
+            }
+            showLoading(false);
+        }
+
+        function showMainSection() {
+            document.getElementById('authSection').style.display = 'none';
+            document.getElementById('mainSection').style.display = 'block';
+        }
+
+        function logout() {
+            localStorage.clear();
+            document.getElementById('mainSection').style.display = 'none';
+            document.getElementById('authSection').style.display = 'block';
+        }
+
+        function showLoading(show, text = 'در حال پردازش...') {
+            const loadingSection = document.getElementById('loadingSection');
+            const loadingText = document.getElementById('loadingText');
+            loadingText.textContent = text;
+            loadingSection.style.display = show ? 'block' : 'none';
+        }
+
+        function showAlert(message, type) {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = message;
+            container.appendChild(alert);
+            setTimeout(() => alert.remove(), 8000);
+        }
+
+        window.addEventListener('load', () => {
+            const address = localStorage.getItem('walletAddress');
+            if (address) {
+                showMainSection();
+                loadWalletData();
+            }
+        });
+    </script>
+</body>
+</html>
